@@ -1,0 +1,51 @@
+body{
+    background-color: rgb(56, 191, 56);
+}
+
+.title {
+    align-self: center;
+    justify-content: center;
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.title h1 {
+    color: white;
+    font-size: 48px;
+    text-align: center;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-around;
+    width: 100%; 
+}
+
+.btn-lvl {
+    background-color: #ffa500; 
+    border: none;
+    padding: 15px 30px;
+    color: white;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-lvl:hover {
+    background-color: #ff7700;
+    transform: scale(1.05); 
+}
+
+.canvasSpace{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+canvas{
+    border-color: rgb(132, 132, 132);
+    border-width: 10px;
+    border-style:solid;
+}
