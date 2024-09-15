@@ -11,123 +11,39 @@
         <h1>JUEGUITO ESTACIONAMIENTO</h1>
     </div>
     <div class="buttons">
-        <button class="btn-lvl">NIVELES 2X2</button>
-        <button class="btn-lvl">NIVELES 3X3</button>
-        <button class="btn-lvl">NIVELES 4X4</button>
+        <button class="btn-lvl" onclick="showCanvas('2x2')">NIVELES 2X2</button>
+        <button class="btn-lvl" onclick="showCanvas('3x3')">NIVELES 3X3</button>
+        <button class="btn-lvl" onclick="showCanvas('4x4')">NIVELES 4X4</button>
     </div>
 
     <div class="canvasSpace">
-        <canvas id="my_canvas" width="700" height="500"></canvas>
-        <script type="text/javascript">
-            const my_canvas = document.getElementById('my_canvas');
-        const ctx = my_canvas.getContext('2d');
-        var tecla;
-        var carros = [];
-        var pause = false
-
-        class carro{
-            constructor(x,y,w,h,c,s){
-                this.x=x
-                this.y=y
-                this.w=w
-                this.h=h
-                this.c=c
-                this.s=s
-            }
-            
-            colision(otroCarro) {
-                if(this.x < otro.x + otro.w &&  
-                this.x + this.w > otro.x &&    
-                this.y < otro.y + otro.h &&    
-                this.y + this.h > otro.y){ 
-                    return true;
-                }else {
-                    return false;
-                }
-            }
-
-            
-        }
-
-        
-        function update(){
-
-            obstaculos.forEach(function (obstaculo, indice, array) {
-                if(obstaculo.colision(obj)){
-                    obj.x = Math.floor(Math.random() * 660)
-                    obj.y = Math.floor(Math.random() * 400)
-                }
-                
-                
-                if(player.colision(obstaculo)){
-                    if(tecla == "up"){
-                        player.y+=player.s;    //w
-                    }if(tecla == "down"){
-                        player.y-=player.s;    //s
-                    }if(tecla == "left"){
-                        player.x+=player.s;    //a
-                    }if(tecla == "right"){
-                        player.x-=player.s;    //d
-                    }
-                }
-            });
-        }
-    
-            
-        function pintar(){
-            
-            ctx.fillStyle =  "rgb(56, 56, 56)";
-            ctx.fillRect(0 , 0, 700, 500);
-            
-            
-            //player
-            ctx.drawImage(playerImg,player.x , player.y, player.w, player.h);
-            
-            //obj
-            ctx.drawImage(objImg,obj.x , obj.y, obj.w, obj.h);
-
-            //obstaculo
-            obstaculos.forEach(function (obstaculo, i, array) {
-                ctx.fillStyle =  obstaculo.c;
-                ctx.fillRect(obstaculo.x , obstaculo.y, obstaculo.w, obstaculo.h);
-                ctx.strokeRect(obstaculo.x , obstaculo.y, obstaculo.w, obstaculo.h);
-            });
-
-            if(pause==true){
-                ctx.fillRect(0 , 0, 700, 500);
-                
-                ctx.font = "35px Arial";
-                ctx.strokeStyle="rgba(0, 0, 0, 0.7)"
-                ctx.strokeText("P A U S E", 250,250);
-                ctx.fillStyle="rgba(255, 232, 1, 0.7)"
-                ctx.fillText("P A U S E", 250, 250);
-            }
-            
-            if(pause==false){
-                update();
-            }
-            requestAnimationFrame(pintar);
-        }
-
-        document.addEventListener("keypress",(e)=>{ 
-            //SE TIENE QUE CAMBIAR AL CODIGO DE DARLE CLICK Y A ESC PARA ABRIR EL MENU//
-            if(pause==false){
-                if(e.keyCode == 119){
-                    tecla="up"    //w
-                }
-            }
-            if(e.keyCode == 32){
-                pause = !pause //Pause
-            }
-        })
-
-        //corre el juego (se tiene que cambiar a una opcion del menu)
-        requestAnimationFrame(pintar);
-        
-        
-        </script>
+        <canvas id="my_canvas" width="700" height="500" style="display:none;"></canvas>
     </div>
-    
+
+    <script>
+
+        function showCanvas(level) {
+            const canvas = document.getElementById('my_canvas');
+            
+            // Mostramos el canvas solo si se selecciona el nivel 3x3
+            if (level === '3x3') {
+                canvas.style.display = 'block';
+                opcionBtn = 3;
+
+                const oldScript = document.getElementById('gameScript');
+                if (oldScript) {
+                    oldScript.remove();
+                }
+
+                const script = document.createElement('script');
+                script.src = 'Juego3x3.js';
+                script.id = 'gameScript';
+                document.body.appendChild(script);
+            } else {
+                canvas.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
 
