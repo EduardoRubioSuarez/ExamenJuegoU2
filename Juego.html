@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="title">
-        <h1>JUEGUITO ESTACIONAMIENTO</h1>
+        <h1>ESCAPE DE LA CLASE DEL JONA</h1>
     </div>
     <div class="buttons">
         <button class="btn-lvl" onclick="showCanvas('3x3')">NIVELES 3X3</button>
@@ -20,32 +20,37 @@
         <canvas id="my_canvas" width="700" height="500" style="display:none;"></canvas>
     </div>
 
+    <audio id="musicaFondo" src="./media/musicaFondo.mp3" loop></audio>
+
     <script>
+        let gameInstance;
 
         function showCanvas(level) {
             const canvas = document.getElementById('my_canvas');
-            
-            // Muestra el canvas solo si se selecciona el nivel 3x3
-            if (level === '3x3') {
-                canvas.style.display = 'block';
-                opcionBtn = 3;
+            const musicaFondo = document.getElementById('musicaFondo');
 
-                const oldScript = document.getElementById('gameScript');
-                if (oldScript) {
-                    oldScript.remove();
-                }
+            if (gameInstance) {
+                cancelAnimationFrame(gameInstance);
+            }
 
-                const script = document.createElement('script');
-                script.src = 'Juego3x3.js';
-                script.id = 'gameScript';
-                document.body.appendChild(script);
-            } else {
-                canvas.style.display = 'none';
+            canvas.style.display = 'block'; 
+            const oldScript = document.getElementById('gameScript');
+            if (oldScript) {
+                oldScript.remove();
+            }
+
+            const script = document.createElement('script');
+            script.src = `Juego${level}.js`;
+            script.id = 'gameScript';
+            document.body.appendChild(script);
+            if (musicaFondo.paused) {
+                musicaFondo.play();
             }
         }
     </script>
 </body>
 </html>
+
 
 
 <!--
