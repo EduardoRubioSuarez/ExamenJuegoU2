@@ -11,9 +11,9 @@
         <h1>JUEGUITO ESTACIONAMIENTO</h1>
     </div>
     <div class="buttons">
-        <button class="btn-lvl" onclick="showCanvas('2x2')">NIVELES 2X2</button>
         <button class="btn-lvl" onclick="showCanvas('3x3')">NIVELES 3X3</button>
         <button class="btn-lvl" onclick="showCanvas('4x4')">NIVELES 4X4</button>
+        <button class="btn-lvl" onclick="showCanvas('5x5')">NIVELES 5X5</button>
     </div>
 
     <div class="canvasSpace">
@@ -25,7 +25,7 @@
         function showCanvas(level) {
             const canvas = document.getElementById('my_canvas');
             
-            // Mostramos el canvas solo si se selecciona el nivel 3x3
+            // Muestra el canvas solo si se selecciona el nivel 3x3
             if (level === '3x3') {
                 canvas.style.display = 'block';
                 opcionBtn = 3;

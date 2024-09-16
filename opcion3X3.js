@@ -10,6 +10,8 @@ var carroIzquierda = new Image();
 carroIzquierda.src = "./media/ImgIzquierda.png";
 var carroDerecha = new Image();
 carroDerecha.src = "./media/ImgDerecha.png";
+
+// Cargar un sonido (reemplazar con tu archivo de sonido)
 var sound = new Audio("./media/moveSound.mp3");
 
 class Carro {
@@ -21,10 +23,9 @@ class Carro {
         this.s = s; 
         this.t = t;
         this.moving = false;
-        this.originalX = x; 
-        this.originalY = y; 
     }
 
+    // Método para verificar si el carro fue clickeado
     isClicked(clickX, clickY) {
         return (
             clickX > this.x &&
@@ -35,56 +36,23 @@ class Carro {
     }
 
     handleClick() {
-        if (!this.estaChocandoConOtro()) {
-            this.moving = true;
-            sound.play();
-        }
+        console.log(`Clickeaste en un carro de tipo: ${this.t}`);
+        this.moving = true;
+        sound.play();
     }
 
-    estaChocando(otroCarro) {
-        return (
-            this.x < otroCarro.x + otroCarro.w &&
-            this.x + this.w > otroCarro.x &&
-            this.y < otroCarro.y + otroCarro.h &&
-            this.y + this.h > otroCarro.y
-        );
-    }
-
-    // Verificar si el carro colisiona con cualquier otro carro
-    estaChocandoConOtro() {
-        return carros.some(otroCarro => otroCarro !== this && this.estaChocando(otroCarro));
-    }
-
-    // Método para actualizar la posición del carro dependiendo de su tipo
-    update() {
-        if (!this.moving) return; 
-
-        let newX = this.x;
-        let newY = this.y;
+    // Actualiza la posición del carro dependiendo de su tipo
+    updatePosition() {
+        if (!this.moving) return; // Si no está en movimiento, salir
 
         if (this.t === "arriba" && this.y > -1000) {
-            newY -= this.s; // Movimiento hacia arriba
+            this.y -= this.s; // Mover hacia arriba
         } else if (this.t === "abajo" && this.y < 1000) {
-            newY += this.s; // Movimiento hacia abajo
+            this.y += this.s; // Mover hacia abajo
         } else if (this.t === "izquierda" && this.x > -1000) {
-            newX -= this.s; // Movimiento hacia la izquierda
+            this.x -= this.s; // Mover hacia la izquierda
         } else if (this.t === "derecha" && this.x < 1000) {
-            newX += this.s; // Movimiento hacia la derecha
-        }
-
-        const tempX = this.x;
-        const tempY = this.y;
-        this.x = newX;
-        this.y = newY;
-
-        if (this.estaChocandoConOtro() && this.x<900 && this.x>-900 && this.y<900 && this.y>-900) {
-            this.x = this.originalX;
-            this.y = this.originalY;
-            this.moving = false;
-            sound.pause();
-        } else {
-            this.x = newX;
-            this.y = newY;
+            this.x += this.s; // Mover hacia la derecha
         }
 
         if (this.y <= -1000 || this.y >= 1000 || this.x <= -1000 || this.x >= 1000) {
@@ -102,7 +70,7 @@ const tipos = ["arriba", "abajo", "derecha", "izquierda"];
 const initialX = 200;
 const initialY = 100;
 
-// Llena el arreglo de carros
+// Llenar el arreglo de carros
 for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
         let x = initialX + col * carSize;
@@ -118,7 +86,7 @@ function pintar() {
 
     // Pinta la matriz de carros y actualiza su posición si están en movimiento
     carros.forEach(function(carro) {
-        carro.update();
+        carro.updatePosition();
 
         if (carro.t == "arriba") {
             ctx.drawImage(carroArriba, carro.x, carro.y, carro.w, carro.h);
