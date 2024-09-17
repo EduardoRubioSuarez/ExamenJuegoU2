@@ -269,6 +269,7 @@
             if (clickX > 250 && clickX < 450 && clickY > 400 && clickY < 490) {
                 iniciarJuego();
                 musicaFondo.play();
+                cambiosDeDireccion = 0;
             }
         } else {
             carros.forEach(function(carro) {
