@@ -187,6 +187,13 @@
         requestAnimationFrame(pintar);
     }
 
+    function detenerJuego() {
+        gameActive = false;
+        sonidoVictoria.pause();
+        sound.pause();
+        musicaFondo.pause();
+    }
+
     function pintar() {
         ctx.clearRect(0, 0, my_canvas.width, my_canvas.height);
         ctx.fillStyle = "rgb(56, 56, 56)";

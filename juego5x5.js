@@ -6,7 +6,7 @@
     var elapsedTime = 0;
     var gameActive = true;
     var victoria = false;
-    var cambiosDeDireccion=0;
+    var cambiosDeDireccion = 0;
     var sonidoVictoria = new Audio("./media/musicaVictoria.mp3");
     var musicaFondo = document.getElementById('musicaFondo');
     var carroArriba = new Image();
@@ -20,6 +20,8 @@
     var sound = new Audio("./media/moveSound.mp3");
     var imagenGanaste = new Image();
     imagenGanaste.src = "./media/imagenGanaste.jpeg";
+
+    var animationId;
 
     class Carro {
         constructor(x, y, w, h, s, t) {
@@ -112,7 +114,7 @@
                 this.x = newX;
                 this.y = newY;
                 direccionContraria = true;
-                cambiosDeDireccion+=1;
+                cambiosDeDireccion += 1;
             }
 
             return direccionContraria;
@@ -187,6 +189,17 @@
         requestAnimationFrame(pintar);
     }
 
+    function detenerJuego() {
+        gameActive = false;
+        sonidoVictoria.pause();
+        sound.pause();
+        musicaFondo.pause();
+
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+        }
+    }
+
     function pintar() {
         ctx.clearRect(0, 0, my_canvas.width, my_canvas.height);
         ctx.fillStyle = "rgb(56, 56, 56)";
@@ -215,7 +228,7 @@
         }
 
         if (!victoria) {
-            requestAnimationFrame(pintar);
+            animationId = requestAnimationFrame(pintar);
         }
     }
 
@@ -230,8 +243,9 @@
         ctx.font = "40px Arial";
         ctx.fillStyle = "WHITE";
         ctx.fillText(`Escapaste en: ${elapsedTime.toFixed(2)} segundos`, 350, 200);
-
-        ctx.fillText(`Ocupaste: ${cambiosDeDireccion} cambios de dirección`, 350, 250);
+        
+        ctx.fillStyle = "red";
+        ctx.fillText(`Reinicia el nivel antes de cambiar la dificultad`, 350, 300);
 
         ctx.fillStyle = "red";
         ctx.fillRect(250, 400, 200, 90);
@@ -252,7 +266,7 @@
                 musicaFondo.play();
             }
         } else {
-            carros.forEach(carro => {
+            carros.forEach(function(carro) {
                 if (carro.isClicked(clickX, clickY)) {
                     carro.handleClick();
                 }
@@ -260,5 +274,7 @@
         }
     });
 
-    iniciarJuego();
+    window.iniciarJuego5x5 = iniciarJuego;
+    window.stopJuego5x5 = detenerJuego;
+
 })();

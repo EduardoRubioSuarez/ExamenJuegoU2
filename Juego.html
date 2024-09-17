@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,28 +27,53 @@
 
     <script>
         let gameInstance;
+        let currentLevel = null; // Variable para guardar el nivel actual
 
         function showCanvas(level) {
             const canvas = document.getElementById('my_canvas');
             const musicaFondo = document.getElementById('musicaFondo');
 
             if (gameInstance) {
+                if (typeof gameInstance.stop === 'function') {
+                    gameInstance.stop(); // Detenemos el juego en el nivel actual
+                }
                 cancelAnimationFrame(gameInstance);
             }
 
-            canvas.style.display = 'block'; 
+            if (currentLevel !== null && typeof window[`stopJuego${currentLevel}`] === 'function') {
+                window[`stopJuego${currentLevel}`](); // Detenemos el nivel actual si existe
+            }
+
+            currentLevel = level; // Actualizamos el nivel actual
+
+            if (!musicaFondo.paused) {
+                musicaFondo.pause();
+            }
+
+            canvas.style.display = 'block'; // Mostrar el canvas
+
             const oldScript = document.getElementById('gameScript');
             if (oldScript) {
                 oldScript.remove();
             }
 
+            // Crear un nuevo script para cargar el nivel
             const script = document.createElement('script');
             script.src = `Juego${level}.js`;
             script.id = 'gameScript';
             document.body.appendChild(script);
+
+            // Asegurar que la música de fondo se reproduzca
             if (musicaFondo.paused) {
                 musicaFondo.play();
             }
+
+            // Iniciar el juego correspondiente una vez que el script se haya cargado
+            script.onload = function() {
+                if (typeof window[`iniciarJuego${level}`] === 'function') {
+                    window[`iniciarJuego${level}`]();
+                }
+            };
         }
     </script>
 </body>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        canvas{
+            background-color: rgb(119, 136, 153);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="my_canvas" width="700" height="500"></canvas>
+    <script type="text/javascript">
+        const my_canvas = document.getElementById('my_canvas');
+        const ctx = my_canvas.getContext('2d');
+        var tecla;
+        var obstaculos = [];
+        var pause = false
+        var score = 0
+        var playerImg = new Image();
+        playerImg.src = "ladron.png";
+        const audio = new Audio("sonidoMonedas.mp3");
+
+        var objImg = new Image();
+        objImg.src = "moneda.png";
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(350 , 250, 70, 70);
+        ctx.strokeRect(350 , 250, 70, 70);
+
+        class rect{
+            constructor(x,y,w,h,c,s){
+                this.x=x
+                this.y=y
+                this.w=w
+                this.h=h
+                this.c=c
+                this.s=s
+            }
+            
+            colision(otro) {
+                if(this.x < otro.x + otro.w &&  
+                this.x + this.w > otro.x &&    
+                this.y < otro.y + otro.h &&    
+                this.y + this.h > otro.y){ 
+                    return true;
+                }else {
+                    return false;
+                }
+            }
+
+            
+        }
+
+        var player = new rect(350,250,50,50,"white",5)
+        var obj = new rect(100,100,30,30,"white",10)
+        obstaculos.push(new rect(100,350,350,30,"white",10))
+        obstaculos.push(new rect(100,50,350,30,"white",10)) 
+
+
+
+        
+        function update(){
+            if(tecla == "up"){
+                player.y-=player.s;    //w
+                if(player.y+70 <=-40){
+                    player.y=540
+                }
+            }if(tecla == "down"){
+                player.y+=player.s;    //s
+                if(player.y+70 >=540){
+                    player.y=-40
+                }
+            }if(tecla == "left"){
+                player.x-=player.s;    //a
+                if(player.x+70 <=-40){
+                    player.x=740
+                }
+            }if(tecla == "right"){
+                player.x+=player.s;    //d
+                if(player.x+70 >=740){
+                    player.x=-40
+                }
+            }
+
+            if(player.colision(obj)){
+                obj.x = Math.floor(Math.random() * 500)
+                obj.y = Math.floor(Math.random() * 450)
+                score += 10
+                player.s = player.s+1;
+                audio.play();
+            }
+
+            
+            obstaculos.forEach(function (obstaculo, indice, array) {
+                if(obstaculo.colision(obj)){
+                    obj.x = Math.floor(Math.random() * 660)
+                    obj.y = Math.floor(Math.random() * 400)
+                }
+                
+                
+                if(player.colision(obstaculo)){
+                    if(tecla == "up"){
+                        player.y+=player.s;    //w
+                    }if(tecla == "down"){
+                        player.y-=player.s;    //s
+                    }if(tecla == "left"){
+                        player.x+=player.s;    //a
+                    }if(tecla == "right"){
+                        player.x-=player.s;    //d
+                    }
+                }
+            });
+        }
+    
+            
+        function pintar(){
+            ctx.fillStyle =  "rgb(119, 136, 153)";
+            ctx.fillRect(0 , 0, 700, 500);
+
+            //player
+            ctx.drawImage(playerImg,player.x , player.y, player.w, player.h);
+            
+            //obj
+            ctx.drawImage(objImg,obj.x , obj.y, obj.w, obj.h);
+
+            //obstaculo
+            obstaculos.forEach(function (obstaculo, i, array) {
+                ctx.fillStyle =  obstaculo.c;
+                ctx.fillRect(obstaculo.x , obstaculo.y, obstaculo.w, obstaculo.h);
+                ctx.strokeRect(obstaculo.x , obstaculo.y, obstaculo.w, obstaculo.h);
+            });
+
+            //MARCADOR PUNTOS
+            ctx.font = "20px Arial";
+            ctx.strokeStyle="rgba(0, 0, 0, 0.7)"
+            ctx.strokeText("Score: "+score, 550,30);
+            ctx.fillStyle="yellow"
+            ctx.fillText("Score: "+score, 550, 30);
+
+            //MARCADOR VELOCIDAD 
+            ctx.fillStyle="rgba(0, 0, 0, 0.7)"
+            ctx.fillText("Velocidad: "+player.s, 550, 60);
+
+            if(pause==true){
+                ctx.fillRect(0 , 0, 700, 500);
+
+                ctx.font = "35px Arial";
+                ctx.strokeStyle="rgba(0, 0, 0, 0.7)"
+                ctx.strokeText("P A U S E", 250,250);
+                ctx.fillStyle="rgba(255, 232, 1, 0.7)"
+                ctx.fillText("P A U S E", 250, 250);
+            }
+
+            if(pause==false){
+                update();
+            }
+            requestAnimationFrame(pintar);
+        }
+
+        document.addEventListener("keypress",(e)=>{ 
+            if(pause==false){
+                if(e.keyCode == 119){
+                    tecla="up"    //w
+                }if(e.keyCode == 115){
+                    tecla="down"  //s
+                }if(e.keyCode == 97){
+                    tecla="left"  //a
+                }if(e.keyCode == 100){
+                    tecla="right" //d
+                }
+            }
+            if(e.keyCode == 32){
+                pause = !pause //Pause
+            }
+        })
+
+        requestAnimationFrame(pintar);
+
+
+    </script>
+    
+</body>
+</html>
