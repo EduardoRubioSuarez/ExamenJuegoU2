@@ -240,10 +240,15 @@
         ctx.fillText("FELICIDADES", 350, 80);
         ctx.fillText("ESCAPASTE DEL SUEÑO", 350, 120);
 
+        ctx.fillStyle="rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(30,150,640,200);
+
         ctx.font = "40px Arial";
         ctx.fillStyle = "WHITE";
         ctx.fillText(`Escapaste en: ${elapsedTime.toFixed(2)} segundos`, 350, 200);
+        ctx.fillText(`Ocupaste: ${cambiosDeDireccion} cambios de dirección`, 350, 250);
         
+        ctx.font = "30px Arial";
         ctx.fillStyle = "red";
         ctx.fillText(`Reinicia el nivel antes de cambiar la dificultad`, 350, 300);
 
