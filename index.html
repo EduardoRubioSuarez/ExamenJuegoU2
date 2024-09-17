@@ -27,7 +27,7 @@
 
     <script>
         let gameInstance;
-        let currentLevel = null; // Variable para guardar el nivel actual
+        let currentLevel = null;
 
         function showCanvas(level) {
             const canvas = document.getElementById('my_canvas');
@@ -35,40 +35,37 @@
 
             if (gameInstance) {
                 if (typeof gameInstance.stop === 'function') {
-                    gameInstance.stop(); // Detenemos el juego en el nivel actual
+                    gameInstance.stop();
                 }
                 cancelAnimationFrame(gameInstance);
             }
 
             if (currentLevel !== null && typeof window[`stopJuego${currentLevel}`] === 'function') {
-                window[`stopJuego${currentLevel}`](); // Detenemos el nivel actual si existe
+                window[`stopJuego${currentLevel}`]();
             }
 
-            currentLevel = level; // Actualizamos el nivel actual
+            currentLevel = level; 
 
             if (!musicaFondo.paused) {
                 musicaFondo.pause();
             }
 
-            canvas.style.display = 'block'; // Mostrar el canvas
+            canvas.style.display = 'block';
 
             const oldScript = document.getElementById('gameScript');
             if (oldScript) {
                 oldScript.remove();
             }
 
-            // Crear un nuevo script para cargar el nivel
             const script = document.createElement('script');
             script.src = `Juego${level}.js`;
             script.id = 'gameScript';
             document.body.appendChild(script);
 
-            // Asegurar que la música de fondo se reproduzca
             if (musicaFondo.paused) {
                 musicaFondo.play();
             }
 
-            // Iniciar el juego correspondiente una vez que el script se haya cargado
             script.onload = function() {
                 if (typeof window[`iniciarJuego${level}`] === 'function') {
                     window[`iniciarJuego${level}`]();
