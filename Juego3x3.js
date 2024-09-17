@@ -2,7 +2,13 @@
     const my_canvas = document.getElementById('my_canvas');
     const ctx = my_canvas.getContext('2d');
     var carros = [];
-
+    var startTime = Date.now();
+    var elapsedTime = 0;
+    var gameActive = true;
+    var victoria = false;
+    var cambiosDeDireccion=0;
+    var sonidoVictoria = new Audio("./media/musicaVictoria.mp3");
+    var musicaFondo = document.getElementById('musicaFondo');
     var carroArriba = new Image();
     carroArriba.src = "./media/ImgArriba.png";
     var carroAbajo = new Image();
@@ -12,6 +18,8 @@
     var carroDerecha = new Image();
     carroDerecha.src = "./media/ImgDerecha.png";
     var sound = new Audio("./media/moveSound.mp3");
+    var imagenGanaste = new Image();
+    imagenGanaste.src = "./media/imagenGanaste.jpeg";
 
     class Carro {
         constructor(x, y, w, h, s, t) {
@@ -24,6 +32,22 @@
             this.moving = false;
             this.originalX = x;
             this.originalY = y;
+            this.image = this.asignarImagen();
+        }
+
+        asignarImagen() {
+            switch (this.t) {
+                case "arriba":
+                    return carroArriba;
+                case "abajo":
+                    return carroAbajo;
+                case "izquierda":
+                    return carroIzquierda;
+                case "derecha":
+                    return carroDerecha;
+                default:
+                    return carroArriba;
+            }
         }
 
         isClicked(clickX, clickY) {
@@ -31,7 +55,7 @@
                 clickX > this.x &&
                 clickX < this.x + this.w &&
                 clickY > this.y &&
-                clickY < this.y + this.h
+                clickY < this.h + this.y
             );
         }
 
@@ -55,6 +79,45 @@
             return carros.some(otroCarro => otroCarro !== this && this.estaChocando(otroCarro));
         }
 
+        moverEnDireccionContraria() {
+            let newX = this.x;
+            let newY = this.y;
+            let direccionContraria = false;
+
+            if (this.t === "arriba") {
+                newY += this.s;
+                this.t = "abajo";
+            } else if (this.t === "abajo") {
+                newY -= this.s;
+                this.t = "arriba";
+            } else if (this.t === "izquierda") {
+                newX += this.s;
+                this.t = "derecha";
+            } else if (this.t === "derecha") {
+                newX -= this.s;
+                this.t = "izquierda";
+            }
+
+            const tempX = this.x;
+            const tempY = this.y;
+            this.x = newX;
+            this.y = newY;
+
+            if (this.estaChocandoConOtro()) {
+                this.x = this.originalX;
+                this.y = this.originalY;
+                this.moving = false;
+                sound.pause();
+            } else {
+                this.x = newX;
+                this.y = newY;
+                direccionContraria = true;
+                cambiosDeDireccion+=1;
+            }
+
+            return direccionContraria;
+        }
+
         update() {
             if (!this.moving) return;
 
@@ -76,59 +139,106 @@
             this.x = newX;
             this.y = newY;
 
-            if (this.estaChocandoConOtro() && this.x < 900 && this.x > -900 && this.y < 900 && this.y > -900) {
-                this.x = this.originalX;
-                this.y = this.originalY;
-                this.moving = false;
-                sound.pause();
+            if (this.estaChocandoConOtro()) {
+                this.x = tempX;
+                this.y = tempY;
+                let direccionContraria = this.moverEnDireccionContraria();
+
+                if (!direccionContraria) {
+                    this.x = this.originalX;
+                    this.y = this.originalY;
+                    this.moving = false;
+                    sound.pause();
+                }
             } else {
                 this.x = newX;
                 this.y = newY;
             }
 
             if (this.y <= -1000 || this.y >= 1000 || this.x <= -1000 || this.x >= 1000) {
-                this.moving = false;
+                carros = carros.filter(carro => carro !== this);
             }
         }
     }
 
-    const carSize = 100;
-    const rows = 3;
-    const cols = 3;
-    const tipos = ["arriba", "abajo", "derecha", "izquierda"];
-    const initialX = 200;
-    const initialY = 100;
-   // var musicaFondo;
+    function iniciarJuego() {
+        const carSize = 100;
+        const rows = 3;
+        const cols = 3;
+        const tipos = ["arriba", "abajo", "derecha", "izquierda"];
+        const initialX = 200;
+        const initialY = 100;
 
-    carros = [];
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-            let x = initialX + col * carSize;
-            let y = initialY + row * carSize;
-            let tipo = tipos[Math.floor(Math.random() * tipos.length)];
-            carros.push(new Carro(x, y, 100, 100, 7, tipo));
+        carros = [];
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                let x = initialX + col * carSize;
+                let y = initialY + row * carSize;
+                let tipo = tipos[Math.floor(Math.random() * tipos.length)];
+                carros.push(new Carro(x, y, 100, 100, 7, tipo));
+            }
         }
+
+        startTime = Date.now();
+        elapsedTime = 0;
+        gameActive = true;
+        victoria = false;
+        sonidoVictoria.pause();
+        requestAnimationFrame(pintar);
     }
 
     function pintar() {
+        ctx.clearRect(0, 0, my_canvas.width, my_canvas.height);
         ctx.fillStyle = "rgb(56, 56, 56)";
         ctx.fillRect(0, 0, my_canvas.width, my_canvas.height);
 
+        if (gameActive) {
+            elapsedTime = (Date.now() - startTime) / 1000;
+        }
+
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "right";
+        ctx.fillText(`Tiempo: ${elapsedTime.toFixed(2)}s`, my_canvas.width - 10, 30);
+
         carros.forEach(function(carro) {
             carro.update();
-            if (carro.t == "arriba") {
-                ctx.drawImage(carroArriba, carro.x, carro.y, carro.w, carro.h);
-            } else if (carro.t == "abajo") {
-                ctx.drawImage(carroAbajo, carro.x, carro.y, carro.w, carro.h);
-            } else if (carro.t == "izquierda") {
-                ctx.drawImage(carroIzquierda, carro.x, carro.y, carro.w, carro.h);
-            } else if (carro.t == "derecha") {
-                ctx.drawImage(carroDerecha, carro.x, carro.y, carro.w, carro.h);
-            }
+            ctx.drawImage(carro.image, carro.x, carro.y, carro.w, carro.h);
         });
 
-        gameInstance = requestAnimationFrame(pintar);
+        if (carros.length === 0 && gameActive && !victoria) {
+            victoria = true;
+            gameActive = false;
+            musicaFondo.pause();
+            sonidoVictoria.play();
+            mostrarPantallaVictoria();
+        }
 
+        if (!victoria) {
+            requestAnimationFrame(pintar);
+        }
+    }
+
+    function mostrarPantallaVictoria() {
+        ctx.drawImage(imagenGanaste, 0, 0, my_canvas.width, my_canvas.height);
+        ctx.font = "40px Arial BOLD";
+        ctx.fillStyle = "yellow";
+        ctx.textAlign = "center";
+        ctx.fillText("FELICIDADES", 350, 80);
+        ctx.fillText("ESCAPASTE DEL SUEÑO", 350, 120);
+
+        ctx.font = "40px Arial";
+        ctx.fillStyle = "WHITE";
+        ctx.fillText(`Escapaste en: ${elapsedTime.toFixed(2)} segundos`, 350, 200);
+
+        ctx.fillText(`Ocupaste: ${cambiosDeDireccion} cambios de dirección`, 350, 250);
+
+        ctx.fillStyle = "red";
+        ctx.fillRect(250, 400, 200, 90);
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText("Reiniciar", 350, 455);
     }
 
     my_canvas.addEventListener("click", (e) => {
@@ -136,16 +246,19 @@
         const clickX = e.clientX - rect.left;
         const clickY = e.clientY - rect.top;
 
-        carros.forEach(carro => {
-            if (carro.isClicked(clickX, clickY)) {
-                carro.handleClick();
+        if (victoria) {
+            if (clickX > 250 && clickX < 450 && clickY > 400 && clickY < 490) {
+                iniciarJuego();
+                musicaFondo.play();
             }
-        });
+        } else {
+            carros.forEach(carro => {
+                if (carro.isClicked(clickX, clickY)) {
+                    carro.handleClick();
+                }
+            });
+        }
     });
 
-    requestAnimationFrame(pintar);
-    /*
-    myMusic = new sound("gametheme.mp3");
-    myMusic.play();
-     */
+    iniciarJuego();
 })();

@@ -6,7 +6,7 @@ body{
     align-self: center;
     justify-content: center;
     display: flex;
-    margin-bottom: 10px;
+    margin-top: -20px;
 }
 
 .title h1 {
@@ -15,6 +15,22 @@ body{
     text-align: center;
     letter-spacing: 2px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.subtitle {
+    display: flex;
+    justify-content: center;
+    margin-top: -15px;
+}
+
+.subtitle p {
+    color: white;
+    font-size: 30px;
+    text-align: center;
+    font-style: italic;
+    margin: 0;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .buttons {
